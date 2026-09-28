@@ -10,7 +10,7 @@ import { DirectionAwareHover } from "@/components/ui/card";
 import { MovieLoader } from "@/components/ui/loader";
 import { MovieModal } from "@/components/features/movie-modal";
 import { api } from "@/services/api";
-import { getPosterUrl, getCachedPoster } from "@/lib/image-util";
+import { enrichWithPosters, getCachedPoster } from "@/lib/image-util";
 
 const MOODS = ["Happy", "Dark", "Adrenaline", "Mind-Bending", "Romantic", "Scary"];
 const GENRES = ["Action", "Sci-Fi", "Comedy", "Romance", "Horror", "Anime", "Drama", "Thriller"];
@@ -75,28 +75,20 @@ function SearchMode({ onSelect, onSwitchToWizard }: { onSelect: (m: any) => void
         setHasSearched(true);
 
         try {
-            // Guarantee at least 650ms display duration so users can enjoy the soothing loader animation and funny quotes
+            // Guarantee at least 650ms display duration for smooth loader animation
             const minAnimationDelay = new Promise(r => setTimeout(r, 650));
             const [data] = await Promise.all([
                 api.search(clean),
                 minAnimationDelay
             ]);
 
+            // Enrich all items with posters before turning off loader so cards never flash placeholders
+            const enriched = await enrichWithPosters(data.results || []);
+
             // Only update if this request matches current query
             if (lastQueryRef.current === clean) {
-                const initialItems = (data.results || []).map((r: any) => ({
-                    ...r,
-                    poster: r.poster || getCachedPoster(r.id) || null
-                }));
-                setResults(initialItems);
+                setResults(enriched);
                 setLoading(false);
-
-                // Progressively resolve any remaining missing posters in background
-                hydratePostersProgressively(initialItems, (updatedItems) => {
-                    if (lastQueryRef.current === clean) {
-                        setResults(updatedItems);
-                    }
-                });
             }
         } catch (e) {
             console.error("Search failed:", e);
@@ -225,13 +217,9 @@ function WizardMode({ onSelect }: { onSelect: (m: any) => void }) {
         setStep("loading");
         try {
             const data = await api.getQuizItems(g);
-            const items = (data.items || []).map((it: any) => ({
-                ...it,
-                poster: it.poster || getCachedPoster(it.id) || null
-            }));
-            setSelectionItems(items);
+            const enriched = await enrichWithPosters(data.items || []);
+            setSelectionItems(enriched);
             setStep("select");
-            hydratePostersProgressively(items, setSelectionItems);
         } catch (e) {
             console.error(e);
             setStep("genre");
@@ -242,13 +230,9 @@ function WizardMode({ onSelect }: { onSelect: (m: any) => void }) {
         setStep("loading");
         try {
             const data = await api.getHybridRecommendations(mood, genre, selectedMovies);
-            const items = (data.results || []).map((it: any) => ({
-                ...it,
-                poster: it.poster || getCachedPoster(it.id) || null
-            }));
-            setResults(items);
+            const enriched = await enrichWithPosters(data.results || []);
+            setResults(enriched);
             setStep("results");
-            hydratePostersProgressively(items, setResults);
         } catch (e) {
             console.error(e);
             setStep("select");
@@ -356,40 +340,4 @@ function WizardMode({ onSelect }: { onSelect: (m: any) => void }) {
             </AnimatePresence>
         </div>
     )
-}
-
-/**
- * Progressively fetches missing posters in parallel batches without blocking the UI.
- */
-function hydratePostersProgressively(items: any[], onUpdate: (items: any[]) => void) {
-    const missing = items.filter(it => !it.poster);
-    if (missing.length === 0) return;
-
-    // Resolve posters in background batches of 4
-    (async () => {
-        let currentItems = [...items];
-        for (let i = 0; i < missing.length; i += 4) {
-            const batch = missing.slice(i, i + 4);
-            const resolved = await Promise.all(
-                batch.map(async (item) => {
-                    const poster = await getPosterUrl(item.id, item.type, item.title);
-                    return { id: item.id, poster };
-                })
-            );
-
-            let changed = false;
-            currentItems = currentItems.map(it => {
-                const found = resolved.find(r => r.id === it.id);
-                if (found && found.poster && !it.poster) {
-                    changed = true;
-                    return { ...it, poster: found.poster };
-                }
-                return it;
-            });
-
-            if (changed) {
-                onUpdate([...currentItems]);
-            }
-        }
-    })();
 }
