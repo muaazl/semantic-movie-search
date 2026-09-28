@@ -1,5 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-const TMDB_KEY = process.env.NEXT_PUBLIC_TMDB_KEY;
+const TMDB_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || "";
 
 export const api = {
   search: async (query: string, type: string = "All") => {
@@ -13,7 +13,7 @@ export const api = {
 
   searchByMood: async (mood: string) => {
     const res = await fetch(`${API_URL}/mood?mood=${encodeURIComponent(mood)}`, {
-        method: "POST"
+      method: "POST"
     });
     return await res.json();
   },
@@ -43,16 +43,16 @@ export const api = {
 
   getTrailer: async (id: string, type: string) => {
     try {
-        if(type === 'Anime') return null; 
-        
-        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${TMDB_KEY}`);
-        const data = await res.json();
-        
-        const trailer = data.results?.find((v: any) => v.site === "YouTube" && v.type === "Trailer");
-        return trailer ? trailer.key : null;
-    } catch(e) { 
-        console.error(e);
-        return null; 
+      if (type === 'Anime') return null;
+
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${TMDB_KEY}`);
+      const data = await res.json();
+
+      const trailer = data.results?.find((v: any) => v.site === "YouTube" && v.type === "Trailer");
+      return trailer ? trailer.key : null;
+    } catch (e) {
+      console.error(e);
+      return null;
     }
   }
 };

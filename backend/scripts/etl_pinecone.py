@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -5,8 +6,19 @@ from pinecone import Pinecone, ServerlessSpec
 from tqdm import tqdm
 import time
 
-PINECONE_API_KEY = "pcsk_5tHsyD_Ewe6CLcGWckB2mCAsMuy1E2YDosgMWSt1itcBh1q5PxgmpmNymK4jpX7byrBZgd"
-INDEX_NAME = "cine-match"
+def load_env():
+    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+load_env()
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
+INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "cine-match")
 DATA_PATH = '../data/'
 MAX_ITEMS = 40000
 

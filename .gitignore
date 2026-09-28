@@ -2,7 +2,6 @@
 data/
 ml_engine/data/
 *.csv
-*.pkl
 
 # Ignore node_modules (thousands of tiny files)
 node_modules/
@@ -13,4 +12,8 @@ frontend/.next/
 # Ignore python cache
 __pycache__/
 *.pyc
-.env
+.env*
+!.env.example
+
+# Virtual environments
+venv/

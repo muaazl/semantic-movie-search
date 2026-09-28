@@ -1,9 +1,10 @@
 fastapi
+pandas
 uvicorn
 pydantic
 pinecone
 sentence-transformers
 torch
 numpy
-thefuzz
-python-levenshtein
+rapidfuzz
+rank-bm25

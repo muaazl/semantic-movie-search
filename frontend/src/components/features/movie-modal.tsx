@@ -4,9 +4,9 @@ import { X, Star, Monitor, PlayCircle } from "lucide-react";
 import { SiNetflix, SiAmazonprime, SiHbo } from "react-icons/si";
 import { MdLiveTv } from "react-icons/md";
 import { TbBrandDisney } from "react-icons/tb";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { api } from "../lib/api";
+import { api } from "@/services/api";
 
 const PROVIDERS = [
   { icon: SiNetflix, color: "text-red-600", name: "Netflix" },

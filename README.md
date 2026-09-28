@@ -1,82 +1,72 @@
-# CineMatch. 🎬
+# CineMatch.
 
-**The "World Class" Hybrid Movie Recommender.**  
-CineMatch goes beyond simple genre filtering. It uses **Semantic Search (AI)** to understand the nuance of your request, combined with a "Concierge Wizard" to curate the perfect watchlist based on your mood and specific taste.
+A hybrid movie recommender that combines semantic AI search with genre-based filtering to surface relevant results based on your input.
 
 https://cinematch-muaaz.vercel.app/
 
 <img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/9080f41e-791f-4fa0-ade9-70a701fcb49f" />
 
-## ✨ Features
+## Features
 
-- **🧠 Semantic AI Brain:** Search naturally (e.g., *"A mind-bending sci-fi movie about dreams"* returns *Inception*). Powered by `sentence-transformers` and Pinecone Vector DB.
-- **🧙‍♂️ The Concierge Wizard:** A multi-step interactive guide that learns your Name, Mood, and Taste to generate hyper-personalized results.
-- **🎨 Dynamic UI:** Beautiful, "Netflix-style" interface with Framer Motion animations, dynamic background gradients based on mood, and glassmorphism.
-- **⚡ Hybrid Filtering:** Combines strict Genre filtering with "Vibe-based" Vector search.
-- **🎲 I'm Feeling Lucky:** One-click random high-quality suggestion generator.
-- **📱 Rich Details:** Clean modals with "Where to Watch" providers, ratings, and AI-generated reasons for *why* a movie was recommended.
+- **Semantic Search:** Search using natural language (e.g. *"a mind-bending sci-fi movie about dreams"*). Powered by `sentence-transformers` and Pinecone Vector DB.
+- **Hybrid Filtering:** Combines strict genre filtering with vector-based semantic search.
+- **Rich Movie Details:** Modals include streaming providers, ratings, and an AI-generated reason for why the movie was recommended.
+- **Dynamic UI:** Framer Motion animations, mood-based background gradients, and glassmorphism styling.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-### Frontend (The Face)
+### Frontend
 - **Framework:** Next.js 14 (App Router)
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS + Framer Motion (Animations)
-- **Icons:** Lucide React + React Icons (Brand logos)
+- **Styling:** Tailwind CSS + Framer Motion
+- **Icons:** Lucide React + React Icons
 
-### Backend (The Brain)
+### Backend
 - **API:** FastAPI (Python)
 - **ML Model:** `all-MiniLM-L6-v2` (HuggingFace)
-- **Database:** Pinecone (Vector Database for Embeddings)
-- **Data Source:** TMDB API (Images/Trailers) + Custom Kaggle Dataset (Metadata)
+- **Database:** Pinecone (Vector Database)
+- **Data Source:** TMDB API + Custom Kaggle Dataset
 
-## 🚀 Getting Started Locally
+## Getting Started
 
 ### Prerequisites
-1. Node.js & pnpm installed.
+1. Node.js and pnpm installed.
 2. Python 3.9+ installed.
-3. A free API Key from [Pinecone.io](https://pinecone.io).
+3. A Pinecone API key from [pinecone.io](https://pinecone.io). Set it as `PINECONE_API_KEY` in your environment before running the ETL script.
 
-### 1. Clone the Repo
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/muaazl/cine-match.git
 cd cine-match
 ```
 
-### 2. Setup Backend (The AI Engine)
+### 2. Set Up the Backend
 ```bash
-cd ml_engine
-# Create a virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate # or venv\Scripts\activate on Windows
+cd backend
 
-# Install dependencies
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
 pip install -r requirements.txt
 
-# Run the ETL script once to populate your Vector DB
-# (Make sure to set your PINECONE_API_KEY in the script first)
+# Run once to populate the vector database
 python etl_pinecone.py
 
-# Start the Server
 uvicorn main:app --reload
 ```
-*The API will run at `http://127.0.0.1:8000`*
+The API will be available at `http://127.0.0.1:8000`.
 
-### 3. Setup Frontend (The UI)
+### 3. Set Up the Frontend
 Open a new terminal:
 ```bash
 cd frontend
-
-# Install dependencies
 pnpm install
-
-# Start the App
 pnpm dev
 ```
-*The App will run at `http://localhost:3000`*
+The app will be available at `http://localhost:3000`.
 
-## 🧠 How It Works
+## How It Works
 
-1.  **Data Ingestion:** We processed 40,000+ movies and anime, converting their plots and genres into 384-dimensional vectors using a Transformer model.
-2.  **Vector Search:** When you type a prompt or select a mood, we convert your input into a vector math equation.
-3.  **Cosine Similarity:** The database finds movies that are mathematically "closest" to your query in the vector space, allowing for conceptual matching rather than just keyword matching.
+1. **Data Ingestion:** 40,000+ movies and anime are processed and converted into 384-dimensional vectors using a Transformer model.
+2. **Vector Search:** User input (text prompt or mood selection) is converted into a vector at query time.
+3. **Cosine Similarity:** Pinecone finds movies mathematically closest to the query vector, enabling conceptual matching rather than keyword matching.
