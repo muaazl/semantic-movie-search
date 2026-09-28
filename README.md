@@ -11,8 +11,6 @@ https://github.com/user-attachments/assets/116475d2-d368-45d3-ba89-6c81120ea02f
 
 ---
 
-<img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/9080f41e-791f-4fa0-ade9-70a701fcb49f" />
-
 ## ✨ Features
 
 - **🧠 Semantic AI Brain:** Search naturally (e.g., *"A mind-bending sci-fi movie about dreams"* returns *Inception*). Powered by `sentence-transformers` and Pinecone Vector DB.
