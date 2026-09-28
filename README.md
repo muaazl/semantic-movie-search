@@ -1,7 +1,6 @@
-# CineMatch. 🎬
+# CineMatch.
 
-**The "World Class" Hybrid Movie Recommender.**  
-CineMatch goes beyond simple genre filtering. It uses **Semantic Search (AI)** to understand the nuance of your request, combined with a "Concierge Wizard" to curate the perfect watchlist based on your mood and specific taste.
+A hybrid movie recommender that combines semantic AI search with genre-based filtering to surface relevant results based on your input.
 
 https://cinematch-muaaz.vercel.app/
 
